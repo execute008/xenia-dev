@@ -51,7 +51,9 @@ class Xenia:
             if found != True:
                 self.keywords.append(word)
                 key_count+=1
-                
+        if len(self.classify) == 0 and key_count > 0 or "s" in self.classify or "m" in self.classify:
+-           self.classify.append("k")
+
         self.evalClassify()
                              
     
