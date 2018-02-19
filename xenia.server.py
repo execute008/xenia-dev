@@ -10,6 +10,7 @@ COSTUM_SEARCH_CX = ""
 MAP_API_KEY = ""
 
 
+
 class Xenia:
     def __init__(self):
         self.brain = open("memory/xenia.brain", 'r').readlines()
@@ -50,13 +51,13 @@ class Xenia:
             if found != True:
                 self.keywords.append(word)
                 key_count+=1
-        if len(self.classify) == 0 and key_count > 0 or "s" in self.classify or "m" in self.classify:
-            self.classify.append("k")
                 
         self.evalClassify()
                              
     
     def evalClassify(self):
+        
+        #FIND BEST ANSWER
         score = 0
         highscore = [ 0 , ""]
         for line in self.answers:
@@ -70,6 +71,20 @@ class Xenia:
                 highscore[1] = line[0]
             score = 0
         self.winner = highscore[1]
+
+        #ADD MISSING KEYWORDS
+        for line in self.answers:
+            line = line.strip("\n").split(":")
+            if self.winner in line[0]:
+                self.classify = []
+                for i in range(1, len(line)):
+                    self.classify.append(line[i])
+        if len(self.keywords) > 0:
+            self.classify.append("k")
+        print(str(self.classify) + "+ keys:" + str(self.keywords))
+                            
+                        
+            
 
         ctk, ending = self.check_to_add_keywords()
         if ctk:
@@ -118,7 +133,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             
         request_path = unquote(self.path, encoding="utf-8")
  
-        print(request_path)
+        print("\n" + request_path)
         if("favicon.ico" in request_path):
             self.send_response(0)
         else:
@@ -128,7 +143,6 @@ class RequestHandler(BaseHTTPRequestHandler):
             answer = xenia.answerRequest()
             print(answer)
             response = bytes(answer, 'utf-8')
-            print(response)
             xenia.clean()
             self.send_response(200)
             self.send_header('Content-Type', 'application/json; charset=UTF-8')
