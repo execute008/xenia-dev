@@ -22,16 +22,16 @@ class Xenia:
         self.query = ""
         
     
-    def handleInput(self, input):
-        input = input.strip("?\n").split(" ")
+    def handleInput(self, instream):
+        instream = instream.strip("?\n").split(" ")
         key_count = 0
         search = False
         sf = False
-        for word in input:
+        for word in instream:
             found = False
             for line in self.brain:
                 thought = line.strip("\n").split(":")
-                if thought[0].lower() == word.lower():
+                if thought[0].lower() in word.lower():
                     
                     if search and sf and thought[1] != "a":
                         sf = False
@@ -137,20 +137,26 @@ class RequestHandler(BaseHTTPRequestHandler):
  
         print("\n" + request_path)
         if("favicon.ico" in request_path):
-            self.send_response(0)
+            try:
+                self.send_response(0)
+            except:
+                pass
         else:
-            request_path = request_path.strip("/").replace("%20", " ")
-            xenia = Xenia()
-            xenia.handleInput(request_path)
-            answer = xenia.answerRequest()
-            print(answer)
-            response = bytes(answer, 'utf-8')
-            xenia.clean()
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/json; charset=UTF-8')
-            self.send_header('Access-Control-Allow-Origin', '*')
-            self.end_headers()
-            self.wfile.write(response)
+            try:
+                request_path = request_path.strip("/").replace("%20", " ")
+                xenia = Xenia()
+                xenia.handleInput(request_path)
+                answer = xenia.answerRequest()
+                print(answer)
+                response = bytes(answer, 'utf-8')
+                xenia.clean()
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json; charset=UTF-8')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(response)
+            except:
+                pass
         
 
 
