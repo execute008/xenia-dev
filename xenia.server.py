@@ -31,7 +31,7 @@ class Xenia:
             found = False
             for line in self.brain:
                 thought = line.strip("\n").split(":")
-                if thought[0].lower() in word.lower():
+                if thought[0].lower() == word.lower():
                     
                     if search and sf and thought[1] != "a":
                         sf = False
