@@ -166,6 +166,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 def main():
     print('Listening on localhost:%s' % PORT)
     server = HTTPServer(('', PORT), RequestHandler)
+    server.timeout = 10
     server.serve_forever()
 
         
