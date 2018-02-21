@@ -110,7 +110,7 @@ class Xenia:
         answer = self.winner
         io = StringIO()
         if "s" in self.classify or ("k" in self.classify and len(self.classify) == 1 and len(self.keywords) != None):
-            url = "https://www.googleapis.com/customsearch/v1?q="+self.query.replace(" ", "%20") +"&cx="+COSTUM_SEARCH_CX+"&num=10&key="+SEARCH_API_KEY 
+            url = "https://www.googleapis.com/customsearch/v1?q="+self.query.replace(" ", "%20") +"&cx="+COSTUM_SEARCH_CX+"&num=5&key="+SEARCH_API_KEY 
             json.dump({"answer": answer, "classify": "s", "url": url, "position": "left"}, io)
             return io.getvalue()
         elif "m" in self.classify:
@@ -166,7 +166,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 def main():
     print('Listening on localhost:%s' % PORT)
     server = HTTPServer(('', PORT), RequestHandler)
-    server.timeout = 10
+    server.timeout = 5
     server.serve_forever()
 
         
