@@ -3,6 +3,7 @@ import json
 from io import StringIO
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import unquote
+from random import randint
 
 PORT = 1870
 SEARCH_API_KEY = ""
@@ -109,14 +110,26 @@ class Xenia:
     def answerRequest(self):
         answer = self.winner
         io = StringIO()
+
+        #Search for ... in Google
         if "s" in self.classify or ("k" in self.classify and len(self.classify) == 1 and len(self.keywords) != None):
             url = "https://www.googleapis.com/customsearch/v1?q="+self.query.replace(" ", "%20") +"&cx="+COSTUM_SEARCH_CX+"&num=5&key="+SEARCH_API_KEY 
             json.dump({"answer": answer, "classify": "s", "url": url, "position": "left"}, io)
             return io.getvalue()
+        
+        #Use Maps
         elif "m" in self.classify:
             url = "https://www.google.com/maps/embed/v1/place?key="+MAP_API_KEY+"&q="+self.query.replace(" ", "%20")
             json.dump({"answer": answer, "classify": "m", "url": url,  "position": "left"},io)
             return io.getvalue()
+
+        #Throw a Coin 
+        elif 'tac' in self.classify:
+            result = self.throwCoin()
+            json.dump({"answer": result, "position": "left"},io)
+            return io.getvalue()
+            
+        #All other Answers
         else:
             json.dump({"answer": answer, "position": "left"},io)
             return io.getvalue()
@@ -129,6 +142,15 @@ class Xenia:
         self.keywords = []
         self.winner = ""
         self.query = ""
+    
+    def throwCoin(self):
+        rn = randint(0,1)
+        ret = "Head"
+        if rn:
+            ret = "Tails"
+        return ret
+        
+
 
 class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -166,7 +188,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 def main():
     print('Listening on localhost:%s' % PORT)
     server = HTTPServer(('', PORT), RequestHandler)
-    server.timeout = 5
+    server.timeout = 1
     server.serve_forever()
 
         
